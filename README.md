@@ -233,15 +233,28 @@ TARGET_BRANCH="develop"  # Push to develop instead of main
 - Ensure GitHub Actions is enabled in repository settings
 - Check workflow syntax in the Actions tab
 - Verify branch exists and is accessible
+- Review cron schedule for correctness
 
 **Commits not pushing?**
 - Verify push permissions and branch protection rules
 - Check that the target branch exists
 - Review workflow run logs for error messages
+- Ensure token has appropriate permissions
 
 **Script permissions errors?**
 - The workflow handles `chmod +x` automatically
 - For local testing, run: `chmod +x scripts/random_commit.sh`
+- Check file permissions: `ls -la scripts/`
+
+**Missing config.sh?**
+- Ensure `config.sh` exists in the root directory
+- Run: `git pull` to get the latest version
+- Check `.gitignore` doesn't exclude it
+
+**Debug logging not working?**
+- Enable `DEBUG_MODE=true` in `config.sh`
+- Check `workflow.log` file for details
+- Ensure write permissions to the repository
 
 ## Workflow Logs
 
@@ -250,6 +263,26 @@ View workflow execution logs in GitHub:
 1. Go to repository **Actions** tab
 2. Select **Auto Committer** workflow
 3. Click on a specific run to see detailed logs
+4. Check the step logs for detailed execution information
+5. Download workflow logs for offline analysis
+
+Check local logs:
+
+```bash
+# View debug logs from the script
+cat workflow.log
+
+# View recent commits
+git log --oneline -10
+```
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+- Report issues or suggest features via GitHub Issues
+- Submit improvements via Pull Requests
+- Follow the existing code style and conventions
 
 ## License
 
@@ -262,3 +295,4 @@ Created by RensithUdara
 ---
 
 **Last Updated**: December 2025
+**Version**: 2.0 (Enhanced with error handling and configuration management)
