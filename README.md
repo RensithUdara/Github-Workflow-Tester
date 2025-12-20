@@ -10,9 +10,12 @@ This project demonstrates automated commit workflows using GitHub Actions. It ru
 
 - **Automated Commits**: Automatically generates commits on a configurable schedule
 - **Random Entry Generation**: Creates random log entries with timestamps
-- **Scheduled Execution**: Runs via GitHub Actions on a cron schedule
+- **Scheduled Execution**: Runs via GitHub Actions on a cron schedule (every 5 minutes)
 - **Manual Trigger**: Supports manual workflow dispatch for on-demand execution
-- **Configurable Intervals**: Easy to adjust commit frequency
+- **Error Handling**: Robust error detection and logging
+- **Multi-file Support**: Can commit changes to multiple files
+- **Debug Logging**: Comprehensive logging for troubleshooting
+- **Configuration Management**: Easy customization via `config.sh`
 
 ## Project Structure
 
@@ -22,8 +25,12 @@ workflow-tester/
 │   └── workflows/
 │       └── auto-committer.yml      # GitHub Actions workflow configuration
 ├── scripts/
-│   └── random_commit.sh            # Script to generate random commits
+│   └── random_commit.sh            # Main automation script with error handling
+├── config.sh                        # Customizable configuration file
 ├── random.txt                       # Log file for commit entries
+├── workflow.log                     # Execution debug logs
+├── .gitignore                       # Git ignore patterns
+├── CONTRIBUTING.md                  # Contribution guidelines
 └── README.md                        # This file
 ```
 
@@ -34,24 +41,58 @@ workflow-tester/
 The GitHub Actions workflow (`auto-committer.yml`) triggers automatically every 5 minutes. When executed, it:
 
 1. **Checks out** the repository using the GitHub token
-2. **Configures Git** with author information
-3. **Runs** the `random_commit.sh` script
-4. **Commits and pushes** changes to the main branch
+2. **Validates** repository state and git configuration
+3. **Configures Git** with author information and safety settings
+4. **Runs** the `random_commit.sh` script with error handling
+5. **Commits and pushes** changes to the main branch
+6. **Logs execution** details for debugging
+7. **Reports status** of the workflow run
 
 ### Random Commit Script
 
-The `random_commit.sh` script:
+The improved `random_commit.sh` script now includes:
 
-- Generates **2-4 random commits** per execution
-- Appends timestamped log entries to `random.txt`
-- Spaces out commits with 30-300 second delays
-- Pushes all changes to the origin main branch
+- **Error handling** - Exits gracefully on errors with detailed messages
+- **Configuration loading** - Sources settings from `config.sh`
+- **Comprehensive logging** - Writes all actions to `workflow.log`
+- **Multi-file support** - Can update different files (random.txt, timestamps.log)
+- **Random delays** - Configurable delays between commits
+- **Git validation** - Checks git configuration before execution
+- **Push verification** - Confirms successful push operations
 
 Each log entry includes:
 - Current date and time
-- A random number for uniqueness
+- Random values for uniqueness
+- Operation type and file information
 
 ## Configuration
+
+### Using config.sh
+
+The `config.sh` file provides easy customization without modifying the main script:
+
+```bash
+# Commit settings
+MIN_COMMITS=2           # Minimum commits per run
+MAX_COMMITS=4           # Maximum commits per run
+
+# Delay settings (in seconds)
+MIN_DELAY=30            # Minimum delay between commits
+MAX_DELAY=300           # Maximum delay between commits
+
+# Files to commit
+COMMIT_FILES=("random.txt" "timestamps.log")
+
+# Commit message prefix
+COMMIT_PREFIX="Auto-commit"
+
+# Branch to push to
+TARGET_BRANCH="main"
+
+# Debug logging
+DEBUG_MODE=true         # Enable/disable debug output
+DEBUG_LOG="workflow.log"
+```
 
 ### Workflow Schedule
 
@@ -65,8 +106,10 @@ on:
 
 **Cron Format**: `minute hour day month dayofweek`
 - `*/5 * * * *` = Every 5 minutes
+- `*/15 * * * *` = Every 15 minutes
 - `0 */2 * * *` = Every 2 hours
 - `0 0 * * *` = Daily at midnight
+- `0 */6 * * *` = Every 6 hours
 
 ### Git Configuration
 
