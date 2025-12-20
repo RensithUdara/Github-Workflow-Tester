@@ -154,9 +154,13 @@ chmod +x scripts/random_commit.sh
 
 | File | Purpose |
 |------|---------|
-| `.github/workflows/auto-committer.yml` | GitHub Actions workflow configuration |
-| `scripts/random_commit.sh` | Bash script that generates random commits |
+| `.github/workflows/auto-committer.yml` | GitHub Actions workflow with validation and logging |
+| `scripts/random_commit.sh` | Enhanced automation script with error handling |
+| `config.sh` | Configuration file for easy customization |
 | `random.txt` | Log file where commit entries are appended |
+| `workflow.log` | Debug log from workflow executions |
+| `.gitignore` | Git ignore patterns for logs and temp files |
+| `CONTRIBUTING.md` | Guidelines for contributing to the project |
 | `README.md` | Project documentation |
 
 ## Use Cases
@@ -172,7 +176,10 @@ chmod +x scripts/random_commit.sh
 - The workflow uses `secrets.GITHUB_TOKEN` which is automatically provided by GitHub Actions
 - Git credentials are configured within the workflow context
 - No sensitive information is committed to the repository
+- `.gitignore` excludes logs and temporary files
 - Ensure appropriate branch protection rules are in place
+- Consider using environment secrets for sensitive data
+- Review workflow logs for troubleshooting
 
 ## Customization
 
@@ -180,20 +187,44 @@ chmod +x scripts/random_commit.sh
 
 Modify the cron schedule in `auto-committer.yml` to adjust how often commits are generated.
 
-### Modify Commit Count
+### Adjust Commit Count and Delays
 
-Edit the `COMMITS` calculation in `random_commit.sh` to change how many commits per execution:
+Edit `config.sh`:
 
 ```bash
-COMMITS=$(( ( RANDOM % 3 ) + 2 ))  # Currently 2-4 commits
+# Generate 3-6 commits per run instead of 2-4
+MIN_COMMITS=3
+MAX_COMMITS=6
+
+# Change delays to 1-5 minutes between commits
+MIN_DELAY=60
+MAX_DELAY=300
+```
+
+### Add More Files to Commit
+
+Modify the `COMMIT_FILES` array in `config.sh`:
+
+```bash
+COMMIT_FILES=("random.txt" "timestamps.log" "metrics.csv")
+```
+
+Then update the script's case statement in `scripts/random_commit.sh` to handle new files.
+
+### Customize Commit Messages
+
+Edit `COMMIT_PREFIX` in `config.sh`:
+
+```bash
+COMMIT_PREFIX="chore: automated update"
 ```
 
 ### Change Target Branch
 
-Update the push command in `random_commit.sh`:
+Update `TARGET_BRANCH` in `config.sh`:
 
 ```bash
-git push origin main  # Change 'main' to your branch
+TARGET_BRANCH="develop"  # Push to develop instead of main
 ```
 
 ## Troubleshooting
