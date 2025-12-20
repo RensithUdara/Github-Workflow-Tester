@@ -1,5 +1,4 @@
 # Logs and temporary files
-*.log
 workflow.log
 .DS_Store
 .env
