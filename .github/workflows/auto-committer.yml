@@ -48,7 +48,7 @@ jobs:
         run: |
           chmod +x scripts/random_commit.sh
           ./scripts/random_commit.sh
-          COMMIT_COUNT=$(git rev-list --count HEAD~$(git rev-list --count $(git rev-parse HEAD)~0...$(git rev-parse @{u} 2>/dev/null || echo HEAD~1) 2>/dev/null || echo 1)..HEAD)
+          COMMIT_COUNT=$(git rev-list --count HEAD~1..HEAD 2>/dev/null || echo 0)
           echo "count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
         continue-on-error: true
 
